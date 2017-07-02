@@ -29,7 +29,7 @@ app.post('/installPlugin', function (req, res) {
     let fileName = `${hpAAArtifactBaseName}-${version}.hpi`;
     let urlToDownload = `${hpAAPluginDownloadBaseUrl}${version}/${fileName}`;
     let dest = `${configuration.jenkinsPluginsDir}/${fileName}`;
-
+    let restartCommand = `java -jar ${configuration.jenkinsCli} -s http://localhost:${configuration.jenkinsPort}/ restart`;
     console.log(`Trying to download version ${version}`);
     console.log(`Download url: ${urlToDownload}`);
     console.log(`To: ${dest}`);
@@ -37,7 +37,8 @@ app.post('/installPlugin', function (req, res) {
     exec(`curl -o ${dest} -O ${urlToDownload}`);
     console.log(`Version downloaded successfully`);
 
-    exec(`java -jar ${configuration.jenkinsCli} -s http://localhost:${configuration.jenkinsPort}/ restart`);
+    console.log(`Restart command ${restartCommand}`);
+    exec(restartCommand);
     //exec(`curl http://localhost:8080/restart`);
 
     console.log(`Restarted jenkins`);
