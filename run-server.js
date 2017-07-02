@@ -37,8 +37,10 @@ app.post('/installPlugin', function (req, res) {
     exec(`curl -o ${dest} -O ${urlToDownload}`);
     console.log(`Version downloaded successfully`);
 
-    exec(`curl http://localhost:8080/reload`);
+    exec(`java -jar ${configuration.jenkinsCli} -s http://localhost:${configuration.jenkinsPort}/ restart`);
+    //exec(`curl http://localhost:8080/restart`);
 
+    console.log(`Restarted jenkins`);
     res.end("ok");
 });
 
