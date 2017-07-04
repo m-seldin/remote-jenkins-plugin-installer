@@ -41,6 +41,7 @@ app.post('/installPlugin', function (req, res) {
     console.log(`Download url: ${urlToDownload}`);
     console.log(`To: ${dest}`);
 
+    exec(`rm -R ${configuration.jenkinsPluginsDir}/hp-application-automation-*`);
     exec(`curl -o ${dest} -O ${urlToDownload}`);
     console.log(`Version downloaded successfully`);
 
@@ -90,12 +91,16 @@ function writeConConfigFile(jenkinsLoc,params){
     console.log(`writing configuration to : ${newConfFileName}`);
 
 
-    fs.writeFileSync(`${configuration.jenkinsDir}/${oldNameSpace}.xml`,connTemplate);
+    if(!fs.existsSync(oldConfFileName)) {
+        fs.writeFileSync(oldConfFileName, connTemplate);
+    }
     var re = new RegExp(oldNameSpace,"g");
     connTemplate = connTemplate.replace(re,newNameSpace);
     re =new RegExp(oldModel,"g");9
     connTemplate = connTemplate.replace(re,newModel);
-    fs.writeFileSync(`${configuration.jenkinsDir}/${newNameSpace}.xml`,connTemplate);
+    if(!fs.existsSync(newConfFileName)) {
+        fs.writeFileSync(newConfFileName, connTemplate);
+    }
 
     console.log(`Done writing configuration file`);
 }
