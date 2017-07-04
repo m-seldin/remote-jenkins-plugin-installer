@@ -68,7 +68,8 @@ function writeConConfigFile(jenkinsLoc,params){
     const connSettings = params.connSettings;
     const oldNameSpace = `com.hp.application.automation.tools.settings.OctaneServerSettingsBuilder`;
     const newNameSpace = `com.hpe.application.automation.tools.settings.OctaneServerSettingsBuilder`;
-
+    const newModel = `com.hpe.application.automation.tools.model.OctaneServerSettingsModel`;
+    const oldModel = `com.hp.application.automation.tools.model.OctaneServerSettingsModel`;
     let connTemplate= fs.readFileSync(templateFile).toString();
 
     connTemplate = connTemplate.replace(/\$version\$/g,params.version);
@@ -80,6 +81,7 @@ function writeConConfigFile(jenkinsLoc,params){
     connTemplate = connTemplate.replace(/\$location\$/g,connSettings.location);
     connTemplate = connTemplate.replace(/\$sharedSpace\$/g,connSettings.sharedSpace);
     connTemplate = connTemplate.replace(/\$namespace\$/g,oldNameSpace);
+    connTemplate = connTemplate.replace(/\$model\$/g,oldModel);
 
 
     let oldConfFileName =`${configuration.jenkinsDir}/${oldNameSpace}.xml`;
@@ -91,6 +93,8 @@ function writeConConfigFile(jenkinsLoc,params){
     fs.writeFileSync(`${configuration.jenkinsDir}/${oldNameSpace}.xml`,connTemplate);
     var re = new RegExp(oldNameSpace,"g");
     connTemplate = connTemplate.replace(re,newNameSpace);
+    re =new RegExp(oldModel,"g");9
+    connTemplate = connTemplate.replace(re,newModel);
     fs.writeFileSync(`${configuration.jenkinsDir}/${newNameSpace}.xml`,connTemplate);
 
     console.log(`Done writing configuration file`);

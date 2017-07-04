@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <$namespace$_-OctaneDescriptorImpl plugin="hp-application-automation-tools-plugin@$version$">
     <servers>
-        <com.hp.application.automation.tools.model.OctaneServerSettingsModel>
+        <$model$>
             <identity>$identity$</identity>
             <identityFrom>$identityFrom$</identityFrom>
             <uiLocation>$uiLocation$</uiLocation>
@@ -10,6 +10,6 @@
             <impersonatedUser></impersonatedUser>
             <location>$location$</location>
             <sharedSpace>$sharedSpace$</sharedSpace>
-        </com.hp.application.automation.tools.model.OctaneServerSettingsModel>
+        </$model>
     </servers>
 </$namespace$_-OctaneDescriptorImpl>
