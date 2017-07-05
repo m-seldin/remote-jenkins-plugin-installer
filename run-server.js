@@ -92,14 +92,20 @@ function writeConConfigFile(jenkinsLoc,params){
 
 
     if(!fs.existsSync(oldConfFileName)) {
+        console.log(`Writing old configuration file ${oldConfFileName}`);
         fs.writeFileSync(oldConfFileName, connTemplate);
+    }else{
+        console.log(`${oldConfFileName} configuration exists, not rewriting`);
     }
     var re = new RegExp(oldNameSpace,"g");
     connTemplate = connTemplate.replace(re,newNameSpace);
     re =new RegExp(oldModel,"g");9
     connTemplate = connTemplate.replace(re,newModel);
     if(!fs.existsSync(newConfFileName)) {
+        console.log(`Writing new configuration file ${newConfFileName}`);
         fs.writeFileSync(newConfFileName, connTemplate);
+    }else{
+        console.log(`${newConfFileName} configuration exists, not rewriting`);
     }
 
     console.log(`Done writing configuration file`);
