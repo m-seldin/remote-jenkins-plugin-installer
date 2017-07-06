@@ -87,11 +87,12 @@ function writeConConfigFile(jenkinsLoc,params){
 
     let oldConfFileName =`${configuration.jenkinsDir}/${oldNameSpace}.xml`;
     let newConfFileName = `${configuration.jenkinsDir}/${newNameSpace}.xml`;
-    console.log(`writing configuration to : ${oldConfFileName}`);
-    console.log(`writing configuration to : ${newConfFileName}`);
+    console.log(`Old format configuration : ${oldConfFileName}`);
+    console.log(`New format configuration : ${newConfFileName}`);
 
 
-    if(!fs.existsSync(oldConfFileName)) {
+
+    if(!fs.existsSync(oldConfFileName) || !isServerNameInConfigFile(params.location)) {
         console.log(`Writing old configuration file ${oldConfFileName}`);
         fs.writeFileSync(oldConfFileName, connTemplate);
     }else{
@@ -101,7 +102,7 @@ function writeConConfigFile(jenkinsLoc,params){
     connTemplate = connTemplate.replace(re,newNameSpace);
     re =new RegExp(oldModel,"g");9
     connTemplate = connTemplate.replace(re,newModel);
-    if(!fs.existsSync(newConfFileName)) {
+    if(!fs.existsSync(newConfFileName) || !isServerNameInConfigFile(params.location)) {
         console.log(`Writing new configuration file ${newConfFileName}`);
         fs.writeFileSync(newConfFileName, connTemplate);
     }else{
@@ -109,4 +110,15 @@ function writeConConfigFile(jenkinsLoc,params){
     }
 
     console.log(`Done writing configuration file`);
+}
+
+function isServerNameInConfigFile(currentConfig,requestedServer){
+    let config = fs.readFileSync(currentConfig);
+    if(config.contains(requestedServer)){
+        console.log(`Server ${requestedServer} is in the current config file`);
+        return true;
+    }
+
+    console.log(`Server ${requestedServer} is NOT in the current config file`);
+    return false;
 }
