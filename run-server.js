@@ -100,7 +100,7 @@ function writeConConfigFile(jenkinsLoc,params){
     }
     var re = new RegExp(oldNameSpace,"g");
     connTemplate = connTemplate.replace(re,newNameSpace);
-    re =new RegExp(oldModel,"g");9
+    re =new RegExp(oldModel,"g");
     connTemplate = connTemplate.replace(re,newModel);
     if(!fs.existsSync(newConfFileName) || !isServerNameInConfigFile(newConfFileName,params.location)) {
         console.log(`Writing new configuration file ${newConfFileName}`);
