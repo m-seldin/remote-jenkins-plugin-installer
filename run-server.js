@@ -1,4 +1,5 @@
 'use strict';
+const log4js = require('log4js');
 const express = require('express');
 const fs = require("fs");
 const bodyParser = require('body-parser');
@@ -7,12 +8,21 @@ const app = express();
 const configFile = '.configs/config.json';
 const templateFile = './templates/octane-con-template.xml';
 
+log4js.configure({
+    appenders: [
+        { type: 'console' },
+        { type: 'file', filename: 'logs/server.log' }
+    ]
+});
+
+const logger = log4js.getLogger();
+
 if(!fs.existsSync(configFile)){
-    console.log(`configuration file does not exist! ${configFile}`);
+    logger.error(`configuration file does not exist! ${configFile}`);
 }
 
 if(!fs.existsSync(templateFile)){
-    console.log(`template file does not exist! ${templateFile}`);
+    logger.error(`template file does not exist! ${templateFile}`);
 }
 
 
@@ -27,8 +37,8 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 app.post('/installPlugin', function (req, res) {
-    console.log(`Received params : `);
-    console.log(req.body);
+    logger.info(`Received params : `);
+    logger.info(req.body);
 
     let params = req.body;
     let version = params.version;
@@ -37,22 +47,22 @@ app.post('/installPlugin', function (req, res) {
     let dest = `${configuration.jenkinsPluginsDir}/${fileName}`;
     let restartCommand = `java -jar ${configuration.jenkinsCli} -s http://localhost:${configuration.jenkinsPort}/ restart`;
 
-    console.log(`Trying to download version ${version}`);
-    console.log(`Download url: ${urlToDownload}`);
-    console.log(`To: ${dest}`);
+    logger.info(`Trying to download version ${version}`);
+    logger.info(`Download url: ${urlToDownload}`);
+    logger.info(`To: ${dest}`);
 
     exec(`rm -R ${configuration.jenkinsPluginsDir}/hp-application-automation-*`);
     exec(`curl -o ${dest} -O ${urlToDownload}`);
-    console.log(`Version downloaded successfully`);
+    logger.info(`Version downloaded successfully`);
 
     writeConConfigFile(configuration.jenkinsPluginsDir,params);
 
 
-    console.log(`Restart command ${restartCommand}`);
+    logger.info(`Restart command ${restartCommand}`);
     exec(restartCommand);
     //exec(`curl http://localhost:8080/restart`);
 
-    console.log(`Restarted jenkins`);
+    logger.info(`Restarted jenkins`);
     res.end("ok");
 });
 
@@ -61,7 +71,7 @@ const server = app.listen(configuration.port, function () {
     let host = server.address().address
     let port = server.address().port
 
-    console.log("Example app listening at http://%s:%s", host, port)
+    logger.info("Example app listening at http://%s:%s", host, port)
 
 });
 
@@ -87,38 +97,38 @@ function writeConConfigFile(jenkinsLoc,params){
 
     let oldConfFileName =`${configuration.jenkinsDir}/${oldNameSpace}.xml`;
     let newConfFileName = `${configuration.jenkinsDir}/${newNameSpace}.xml`;
-    console.log(`Old format configuration : ${oldConfFileName}`);
-    console.log(`New format configuration : ${newConfFileName}`);
+    logger.info(`Old format configuration : ${oldConfFileName}`);
+    logger.info(`New format configuration : ${newConfFileName}`);
 
 
 
     if(!fs.existsSync(oldConfFileName) || !isServerNameInConfigFile(oldConfFileName,connSettings.location)) {
-        console.log(`Writing old configuration file ${oldConfFileName}`);
+        logger.info(`Writing old configuration file ${oldConfFileName}`);
         fs.writeFileSync(oldConfFileName, connTemplate);
     }else{
-        console.log(`${oldConfFileName} configuration exists, not rewriting`);
+        logger.info(`${oldConfFileName} configuration exists, not rewriting`);
     }
     let re = new RegExp(oldNameSpace,"g");
     connTemplate = connTemplate.replace(re,newNameSpace);
     re =new RegExp(oldModel,"g");
     connTemplate = connTemplate.replace(re,newModel);
     if(!fs.existsSync(newConfFileName) || !isServerNameInConfigFile(newConfFileName,connSettings.location)) {
-        console.log(`Writing new configuration file ${newConfFileName}`);
+        logger.info(`Writing new configuration file ${newConfFileName}`);
         fs.writeFileSync(newConfFileName, connTemplate);
     }else{
-        console.log(`${newConfFileName} configuration exists, not rewriting`);
+        logger.info(`${newConfFileName} configuration exists, not rewriting`);
     }
 
-    console.log(`Done writing configuration file`);
+    logger.info(`Done writing configuration file`);
 }
 
 function isServerNameInConfigFile(currentConfig,requestedServer){
     let config = fs.readFileSync(currentConfig);
     if(config.indexOf(requestedServer)>=0){
-        console.log(`Server ${requestedServer} is in the current config file`);
+        logger.info(`Server ${requestedServer} is in the current config file`);
         return true;
     }
 
-    console.log(`Server ${requestedServer} is NOT in the current config file`);
+    logger.info(`Server ${requestedServer} is NOT in the current config file`);
     return false;
 }
