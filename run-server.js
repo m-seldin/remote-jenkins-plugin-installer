@@ -114,7 +114,7 @@ function writeConConfigFile(jenkinsLoc,params){
 
 function isServerNameInConfigFile(currentConfig,requestedServer){
     let config = fs.readFileSync(currentConfig);
-    if(config.contains(requestedServer)){
+    if(config.indexOf(requestedServer)>=0){
         console.log(`Server ${requestedServer} is in the current config file`);
         return true;
     }
