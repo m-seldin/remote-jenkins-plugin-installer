@@ -55,7 +55,7 @@ app.post('/installPlugin', function (req, res) {
     exec(`curl -o ${dest} -O ${urlToDownload}`);
     logger.info(`Version downloaded successfully`);
 
-    writeConConfigFile(configuration.jenkinsPluginsDir,params);
+    //writeConConfigFile(configuration.jenkinsPluginsDir,params);
 
 
     logger.info(`Restart command ${restartCommand}`);
