@@ -1,7 +1,7 @@
 'use strict';
 const express = require('express');
 const fs = require("fs");
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
 const exec = require('sync-exec');
 const app = express();
 const configFile = '.configs/config.json';
@@ -56,10 +56,10 @@ app.post('/installPlugin', function (req, res) {
     res.end("ok");
 });
 
-var server = app.listen(configuration.port, function () {
+const server = app.listen(configuration.port, function () {
 
-    var host = server.address().address
-    var port = server.address().port
+    let host = server.address().address
+    let port = server.address().port
 
     console.log("Example app listening at http://%s:%s", host, port)
 
@@ -98,7 +98,7 @@ function writeConConfigFile(jenkinsLoc,params){
     }else{
         console.log(`${oldConfFileName} configuration exists, not rewriting`);
     }
-    var re = new RegExp(oldNameSpace,"g");
+    let re = new RegExp(oldNameSpace,"g");
     connTemplate = connTemplate.replace(re,newNameSpace);
     re =new RegExp(oldModel,"g");
     connTemplate = connTemplate.replace(re,newModel);
