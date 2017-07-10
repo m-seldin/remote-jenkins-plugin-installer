@@ -1,4 +1,5 @@
 'use strict';
+const request = require('sync-request');
 const log4js = require('log4js');
 const express = require('express');
 const fs = require("fs");
@@ -47,23 +48,29 @@ app.post('/installPlugin', function (req, res) {
     let dest = `${configuration.jenkinsPluginsDir}/${fileName}`;
     let restartCommand = `java -jar ${configuration.jenkinsCli} -s http://localhost:${configuration.jenkinsPort}/ restart`;
 
-    logger.info(`Trying to download version ${version}`);
-    logger.info(`Download url: ${urlToDownload}`);
-    logger.info(`To: ${dest}`);
+    if(shouldReplaceVersion(version)) {
+        logger.info(`Trying to download version ${version}`);
+        logger.info(`Download url: ${urlToDownload}`);
+        logger.info(`To: ${dest}`);
 
-    exec(`rm -R ${configuration.jenkinsPluginsDir}/hp-application-automation-*`);
-    exec(`curl -o ${dest} -O ${urlToDownload}`);
-    logger.info(`Version downloaded successfully`);
+        exec(`rm -R ${configuration.jenkinsPluginsDir}/hp-application-automation-*`);
+        exec(`curl -o ${dest} -O ${urlToDownload}`);
+        logger.info(`Version downloaded successfully`);
 
-    //writeConConfigFile(configuration.jenkinsPluginsDir,params);
+        //writeConConfigFile(configuration.jenkinsPluginsDir,params);
 
 
-    logger.info(`Restart command ${restartCommand}`);
-    exec(restartCommand);
-    //exec(`curl http://localhost:8080/restart`);
+        logger.info(`Restart command ${restartCommand}`);
+        exec(restartCommand);
+        //exec(`curl http://localhost:8080/restart`);
 
-    logger.info(`Restarted jenkins`);
-    res.end("ok");
+        logger.info(`Restarted jenkins`);
+        res.end("RESTARTED");
+    }else{
+        logger.info(`No need to install new plugin, current version equals needed version ${version}`);
+        res.end("OK");
+    }
+
 });
 
 const server = app.listen(configuration.port, function () {
@@ -74,6 +81,21 @@ const server = app.listen(configuration.port, function () {
     logger.info("Example app listening at http://%s:%s", host, port)
 
 });
+
+function shouldReplaceVersion(neededVersion){
+    let res = request('GET', `http://myd-vm00693.hpeswlab.net:8080/pluginManager/api/json?depth=1`);
+    let pluginsList = JSON.parse(res.getBody());
+
+    for(let plugin of pluginsList.plugins){
+        if(plugin.shortName =="hp-application-automation-tools-plugin"){
+            if(plugin.version==neededVersion)
+                return false;
+        }
+    }
+
+    return true;
+
+}
 
 function writeConConfigFile(jenkinsLoc,params){
     const connSettings = params.connSettings;

@@ -12,6 +12,7 @@
     "body-parser": "^1.17.2",
     "express": "^4.15.3",
     "log4js": "^1.1.1",
-    "sync-exec": "^0.6.2"
+    "sync-exec": "^0.6.2",
+    "sync-request": "^4.1.0"
   }
 }
