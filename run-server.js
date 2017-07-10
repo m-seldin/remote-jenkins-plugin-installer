@@ -83,7 +83,7 @@ const server = app.listen(configuration.port, function () {
 });
 
 function shouldReplaceVersion(neededVersion){
-    let res = request('GET', `http://myd-vm00693.hpeswlab.net:8080/pluginManager/api/json?depth=1`);
+    let res = request('GET', `http://localhost:8080/pluginManager/api/json?depth=1`);
     let pluginsList = JSON.parse(res.getBody());
 
     for(let plugin of pluginsList.plugins){
